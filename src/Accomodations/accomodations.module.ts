@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common'
-import { AccomodationsController } from './accomodations.controller'
-import { AccomodationsService } from './accomodations.service'
+import { AccommodationsController } from '../Accomodations/accomodations.controller'
+import { AccommodationsService } from '../Accomodations/accomodations.service'
 import { HttpModule } from 'src/Shared/http.module'
 
 @Module({
   imports: [HttpModule],
-  controllers: [AccomodationsController],
-  providers: [AccomodationsService],
+  controllers: [AccommodationsController],
+  providers: [AccommodationsService],
 })
 export class AccomodationsModule {}

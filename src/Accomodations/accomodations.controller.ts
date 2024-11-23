@@ -1,38 +1,37 @@
-import { Controller, Get, Param, Query } from '@nestjs/common'
-import { AccomodationService } from './accomodations.service'
-import { error } from 'console'
+import { Controller, Get, Query } from '@nestjs/common'
+import { AccommodationsService } from '../Accomodations/accomodations.service'
 
-@Controller('accomodations')
-export class AccomodationsController {
-  constructor(private readonly accomodationService: AccomodationService) {}
+@Controller('accommodations')
+export class AccommodationsController {
+  constructor(private readonly accommodationsService: AccommodationsService) {}
 
-  @Param
-  @Returns
+  /**
+   * @param
+   * @param
+   * @returns
+   */
   @Get('search')
-  async search(@Query('category') category: string) {
+  async search(
+    @Query('category') category: string,
+    @Query() filters: Record<string, string | number>,
+  ) {
     if (!category) {
       return { error: 'Category is required' }
-      return.
-      this.accomodationService.searchByCategory(category);
     }
+    delete filters.category
 
-    @returns 
+    return this.accommodationsService.searchByCategory(category, filters)
+  }
 
-    @Get('categories')
-    getCategories(){
-        return [
-            {id: 1, name: 'Hotel'},
-            {id: 2, name: 'Hostel'},
-            {id: 3, name: 'Guest House'},
-        ];
-    }
+  /**
+   * @returns
+   */
+  @Get('categories')
+  getCategories() {
+    return [
+      { id: 1, name: 'Hotel' },
+      { id: 2, name: 'Hostel' },
+      { id: 3, name: 'Pousada' },
+    ]
   }
 }
-function getCategories() {
-    throw new Error('Function not implemented.')
-}
-
-function Returns(target: AccomodationsController, propertyKey: 'search', descriptor: TypedPropertyDescriptor<(category: string) => Promise<any>>): void | TypedPropertyDescriptor<(category: string) => Promise<any>> {
-    throw new Error('Function not implemented.');
-}
-
