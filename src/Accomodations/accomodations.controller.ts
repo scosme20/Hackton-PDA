@@ -24,14 +24,15 @@ export class AccommodationsController {
   }
 
   /**
+   * @param
    * @returns
    */
-  @Get('categories')
-  getCategories() {
-    return [
-      { id: 1, name: 'Hotel' },
-      { id: 2, name: 'Hostel' },
-      { id: 3, name: 'Pousada' },
-    ]
+  @Get('address')
+  async getAddress(@Query('cep') cep: string) {
+    if (!cep) {
+      return { error: 'CEP is required' }
+    }
+
+    return this.accommodationsService.getAddressByCep(cep)
   }
 }
