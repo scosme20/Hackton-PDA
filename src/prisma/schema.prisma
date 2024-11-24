@@ -9,28 +9,40 @@ datasource db {
 
 model Accommodation {
   id          Int      @id @default(autoincrement())
-  name        String
-  address     String
-  city        String
+  name        String   @db.VarChar(255)
   stars       Int
-  latitude    String
-  longitude   String
-  description String
-  district    String
-  state       String
-  country     String
-  placeId     String
-  price       Float
-  category    String
+  latitude    String   @db.VarChar(255)
+  longitude   String   @db.VarChar(255)
+  description String?  @db.Text
+  address     String   @db.VarChar(255)
+  district    String?  @db.VarChar(255)
+  city        String   @db.VarChar(255)
+  state       String   @db.VarChar(255)
+  country     String   @db.VarChar(255)
+  placeId     String   @db.VarChar(255)
+  thumb       String?  @db.VarChar(255)
+  images      Json?
+  amenities   Json?
+  pois        Json?
+  reviews     Json?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  cnpj        String?  @db.VarChar(20)
+  type        TypeEnum
+  type_number Int      @default(1)
+
+  @@map("accommodations")
 }
 
-model Address {
-  id      Int      @id @default(autoincrement())
-  cep     String   @unique
-  street  String
-  city    String
-  state   String
-  country String
+enum TypeEnum {
+  HOTEL
+  HOSTEL
+  APARTMENT
+  RESORT
+  INN
+  MOTEL
+  GUESTHOUSE
+  VILLA
+  COTTAGE
+  CABIN
 }

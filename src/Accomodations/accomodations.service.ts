@@ -1,48 +1,34 @@
 import { Injectable } from '@nestjs/common'
-import { PrismaService } from '../prisma/prisma.service'
-import { Prisma } from '@prisma/client'
+import { PrismaService } from 'src/prisma/prisma.service'
+import { Prisma, Accommodation } from '@prisma/client'
 
 @Injectable()
 export class AccommodationsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<Prisma.Accommodation[]> {
+  async searchByCategory(category: string): Promise<Accommodation[]> {
     try {
-      return await this.prisma.accommodation.findMany()
-    } catch (error) {
-      console.error('Error fetching accommodations:', error.message)
-      throw new Error('Failed to fetch accommodations. Please try again later.')
-    }
-  }
-
-  async create(
-    accommodationData: Prisma.AccommodationCreateInput,
-  ): Promise<Prisma.Accommodation> {
-    try {
-      return await this.prisma.accommodation.create({
-        data: accommodationData,
-      })
-    } catch (error) {
-      console.error('Error creating accommodation:', error.message)
-      throw new Error('Failed to create accommodation. Please try again later.')
-    }
-  }
-
-  async searchByCategory(
-    category: string,
-    filters: Record<string, string | number>,
-  ): Promise<Prisma.Accommodation[]> {
-    try {
-      const accommodations = await this.prisma.accommodation.findMany({
+      return await this.prisma.accommodation.findMany({
         where: {
-          category,
-          price: {
-            gte: filters.minPrice || undefined,
-            lte: filters.maxPrice || undefined,
-          },
+          OR: [
+            {
+              name: {
+                contains: category,
+              },
+            },
+            {
+              district: {
+                contains: category,
+              },
+            },
+            {
+              city: {
+                contains: category,
+              },
+            },
+          ],
         },
       })
-      return accommodations
     } catch (error) {
       console.error(
         'Error searching accommodations by category:',
@@ -52,5 +38,24 @@ export class AccommodationsService {
         'Failed to search accommodations. Please try again later.',
       )
     }
+  }
+
+  async findAll(): Promise<Accommodation[]> {
+    try {
+      const accommodations = await this.prisma.accommodation.findMany()
+      console.log(accommodations) // Exibe as acomodações no console
+      return accommodations // Retorna as acomodações para o cliente
+    } catch (error) {
+      console.error('Error retrieving accommodations:', error.message)
+      throw new Error('Failed to retrieve accommodations')
+    }
+  }
+
+  async create(
+    accommodationData: Prisma.AccommodationCreateInput,
+  ): Promise<Accommodation> {
+    return this.prisma.accommodation.create({
+      data: accommodationData,
+    })
   }
 }

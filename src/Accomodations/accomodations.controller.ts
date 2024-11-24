@@ -17,14 +17,7 @@ export class AccommodationsController {
   }
 
   @Get('search')
-  async searchByCategory(
-    @Query('category') category: string,
-    @Query('minPrice') minPrice: number,
-    @Query('maxPrice') maxPrice: number,
-  ) {
-    return this.accommodationsService.searchByCategory(category, {
-      minPrice,
-      maxPrice,
-    })
+  async searchByCategory(@Query('category') category: string) {
+    return this.accommodationsService.searchByCategory(category)
   }
 }
