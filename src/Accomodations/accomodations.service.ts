@@ -1,57 +1,56 @@
 import { Injectable } from '@nestjs/common'
-import { HttpService } from '@nestjs/axios'
-import { lastValueFrom } from 'rxjs'
+import { PrismaService } from '../prisma/prisma.service'
+import { Prisma } from '@prisma/client'
 
 @Injectable()
 export class AccommodationsService {
-  private readonly baseUrl = 'https://nominatim.openstreetmap.org'
-  private readonly viaCepBaseUrl = 'https://viacep.com.br/ws'
+  constructor(private readonly prisma: PrismaService) {}
 
-  constructor(private readonly httpService: HttpService) {}
-
-  /**
-   * @param
-   * @param
-   * @returns
-   */
-  async searchByCategory(
-    category: string,
-    filters: Record<string, string | number> = {},
-  ): Promise<any> {
-    const url = `${this.baseUrl}/search`
-    const params = {
-      q: category,
-      format: 'json',
-      ...filters,
-    }
-
+  async findAll(): Promise<Prisma.Accommodation[]> {
     try {
-      const response = await lastValueFrom(
-        this.httpService.get(url, { params }),
-      )
-      return response.data
+      return await this.prisma.accommodation.findMany()
     } catch (error) {
-      console.error(
-        'Error fetching data from OpenStreetMap API:',
-        error.message,
-      )
-      throw new Error('Failed to fetch data. Please try again later.')
+      console.error('Error fetching accommodations:', error.message)
+      throw new Error('Failed to fetch accommodations. Please try again later.')
     }
   }
 
-  /**
-   * @param
-   * @returns
-   */
-  async getAddressByCep(cep: string): Promise<any> {
-    const url = `${this.viaCepBaseUrl}/${cep}/json/`
-
+  async create(
+    accommodationData: Prisma.AccommodationCreateInput,
+  ): Promise<Prisma.Accommodation> {
     try {
-      const response = await lastValueFrom(this.httpService.get(url))
-      return response.data
+      return await this.prisma.accommodation.create({
+        data: accommodationData,
+      })
     } catch (error) {
-      console.error('Error fetching data from ViaCEP API:', error.message)
-      throw new Error('Failed to fetch address data. Please try again later.')
+      console.error('Error creating accommodation:', error.message)
+      throw new Error('Failed to create accommodation. Please try again later.')
+    }
+  }
+
+  async searchByCategory(
+    category: string,
+    filters: Record<string, string | number>,
+  ): Promise<Prisma.Accommodation[]> {
+    try {
+      const accommodations = await this.prisma.accommodation.findMany({
+        where: {
+          category,
+          price: {
+            gte: filters.minPrice || undefined,
+            lte: filters.maxPrice || undefined,
+          },
+        },
+      })
+      return accommodations
+    } catch (error) {
+      console.error(
+        'Error searching accommodations by category:',
+        error.message,
+      )
+      throw new Error(
+        'Failed to search accommodations. Please try again later.',
+      )
     }
   }
 }

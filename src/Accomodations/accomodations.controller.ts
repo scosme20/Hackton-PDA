@@ -1,38 +1,30 @@
-import { Controller, Get, Query } from '@nestjs/common'
+import { Controller, Get, Post, Body, Query } from '@nestjs/common'
 import { AccommodationsService } from '../Accomodations/accomodations.service'
+import { Prisma } from '@prisma/client'
 
 @Controller('accommodations')
 export class AccommodationsController {
   constructor(private readonly accommodationsService: AccommodationsService) {}
 
-  /**
-   * @param
-   * @param
-   * @returns
-   */
-  @Get('search')
-  async search(
-    @Query('category') category: string,
-    @Query() filters: Record<string, string | number>,
-  ) {
-    if (!category) {
-      return { error: 'Category is required' }
-    }
-    delete filters.category
-
-    return this.accommodationsService.searchByCategory(category, filters)
+  @Get()
+  async findAll() {
+    return this.accommodationsService.findAll()
   }
 
-  /**
-   * @param
-   * @returns
-   */
-  @Get('address')
-  async getAddress(@Query('cep') cep: string) {
-    if (!cep) {
-      return { error: 'CEP is required' }
-    }
+  @Post()
+  async create(@Body() accommodationData: Prisma.AccommodationCreateInput) {
+    return this.accommodationsService.create(accommodationData)
+  }
 
-    return this.accommodationsService.getAddressByCep(cep)
+  @Get('search')
+  async searchByCategory(
+    @Query('category') category: string,
+    @Query('minPrice') minPrice: number,
+    @Query('maxPrice') maxPrice: number,
+  ) {
+    return this.accommodationsService.searchByCategory(category, {
+      minPrice,
+      maxPrice,
+    })
   }
 }

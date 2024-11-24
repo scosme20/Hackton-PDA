@@ -1,14 +1,16 @@
 version: '3.8'
-
 services:
-  postgres:
-  container_name: hackaton-pg
-  image: postgres
-  ports:
-  -5432:5432
-  environment:
-  POSTGRES_USER: 'postgres'
-  POSTGRES_PASSWORD: senha
-  POSTGRES_DB: hackaton
-  volumes:
-  - ./data/pg:/data/postgres
+  db:
+    image: mysql:8.0
+    container_name: hackatonPda
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: b5d9f8h7
+      MYSQL_DATABASE: hackaton
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./data:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+volumes:
+  mysql_data:
