@@ -1,16 +1,17 @@
 version: '3.8'
+
 services:
   db:
-    image: mysql:8.0
-    container_name: hackatonPda
-    restart: always
+    image: mysql:8
     environment:
       MYSQL_ROOT_PASSWORD: b5d9f8h7
       MYSQL_DATABASE: hackaton
+      MYSQL_USER: root
+      MYSQL_PASSWORD: b5d9f8h7
     ports:
-      - "3307:3306"
+      - "3306:3306"
     volumes:
-      - ./data:/docker-entrypoint-initdb.d
-      - mysql_data:/var/lib/mysql
+      - mysql-data:/var/lib/mysql
+
 volumes:
-  mysql_data:
+  mysql-data:
