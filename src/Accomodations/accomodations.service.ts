@@ -50,17 +50,21 @@ export class AccommodationsService {
     const accommodations = await this.prisma.accommodations.findMany({
       select: {
         id: true,
+        name: true,
         city: true,
         state: true,
         description: true,
         reviews: true,
         thumb: true,
         amenities: true,
+        type: true
       },
     })
 
     return accommodations.map((accommodation) => ({
       id: accommodation.id,
+      name: accommodation.name,
+      type: accommodation.type,
       city: accommodation.city,
       state: accommodation.state,
       description: accommodation.description,
@@ -76,12 +80,14 @@ export class AccommodationsService {
       where: { id },
       select: {
         id: true,
+        name: true,
         city: true,
         state: true,
         description: true,
         reviews: true,
         thumb: true,
         amenities: true,
+        type: true,
       },
     })
 
@@ -91,8 +97,10 @@ export class AccommodationsService {
 
     return {
       id: accommodation.id,
+      name: accommodation.name,
       city: accommodation.city,
       state: accommodation.state,
+      type: accommodation.type,
       description: accommodation.description,
       rating: this.calculateAverageRating(accommodation.reviews),
       image: accommodation.thumb,
@@ -125,6 +133,8 @@ export class AccommodationsService {
       },
       select: {
         id: true,
+        name: true,
+        type: true,
         city: true,
         state: true,
         description: true,
