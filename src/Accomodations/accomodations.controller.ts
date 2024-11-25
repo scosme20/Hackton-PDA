@@ -1,11 +1,19 @@
-import { Controller, Get, Post, Body, Query } from '@nestjs/common'
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Query,
+  Param,
+  Put,
+  Delete,
+} from '@nestjs/common'
 import { AccommodationsService } from '../Accomodations/accomodations.service'
 import { Prisma } from '@prisma/client'
 import axios from 'axios'
 
 @Controller('accommodations')
 export class AccommodationsController {
-  // Classe com a letra maiúscula no início
   private readonly openCageApiKey = '649ce940f26944148f28236a9fa44f32'
 
   constructor(private readonly accommodationsService: AccommodationsService) {}
@@ -43,7 +51,6 @@ export class AccommodationsController {
   @Get('search-by-zip')
   async searchByZipCode(@Query('zipCode') zipCode: string) {
     try {
-      // Requisição à API da OpenCage para obter latitude e longitude
       const response = await axios.get(
         `https://api.opencagedata.com/geocode/v1/json?q=${zipCode}&key=${this.openCageApiKey}`,
       )
@@ -58,10 +65,32 @@ export class AccommodationsController {
 
       const { lat, lng } = result.geometry
 
-      // Use lat e lng para buscar acomodações próximas no banco de dados
       return await this.accommodationsService.findNearbyAccommodations(lat, lng)
     } catch (error) {
       console.error('Erro ao buscar acomodações por CEP:', error.message)
+      throw error
+    }
+  }
+
+  @Put(':id')
+  async update(
+    @Param('id') id: number,
+    @Body() accommodationData: Prisma.accommodationsUpdateInput,
+  ) {
+    try {
+      return await this.accommodationsService.update(id, accommodationData)
+    } catch (error) {
+      console.error('Erro ao atualizar acomodação:', error.message)
+      throw error
+    }
+  }
+
+  @Delete(':id')
+  async remove(@Param('id') id: number) {
+    try {
+      return await this.accommodationsService.remove(id)
+    } catch (error) {
+      console.error('Erro ao excluir acomodação:', error.message)
       throw error
     }
   }
